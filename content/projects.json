@@ -1,0 +1,30 @@
+{
+  "projects": [
+    {
+      "title": "Работа 1",
+      "images": [
+        "assets/project-1/image-1.jpg",
+        "assets/project-1/image-2.jpg",
+        "assets/project-1/image-3.jpg"
+      ]
+    },
+    {
+      "title": "Работа 2",
+      "images": [
+        "assets/project-2/image-1.jpg",
+        "assets/project-2/image-2.jpg",
+        "assets/project-2/image-3.jpg",
+        "assets/project-2/image-4.jpg"
+      ]
+    },
+    {
+      "title": "Работа 3",
+      "images": [
+        "assets/project-3/image-1.jpg",
+        "assets/project-3/image-2.jpg",
+        "assets/project-3/image-3.jpg",
+        "assets/project-3/image-4.jpg"
+      ]
+    }
+  ]
+}

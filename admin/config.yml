@@ -1,0 +1,30 @@
+backend:
+  name: github
+  repo: ВПИШИТЕ_СЮДА_ВАШ_GITHUB_АККАУНТ/ИМЯ_РЕПОЗИТОРИЯ
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+locale: "ru"
+publish_mode: simple
+collections:
+  - name: "portfolio"
+    label: "Портфолио"
+    files:
+      - name: "projects"
+        label: "Проекты и изображения"
+        file: "content/projects.json"
+        format: "json"
+        fields:
+          - label: "Проекты"
+            name: "projects"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "Название проекта", name: "title", widget: "string" }
+              - label: "Изображения проекта"
+                name: "images"
+                widget: "list"
+                summary: "Изображение {{index}}"
+                field: { label: "Изображение", name: "image", widget: "image" }

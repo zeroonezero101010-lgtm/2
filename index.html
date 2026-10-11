@@ -63,6 +63,8 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <header class="topbar">
@@ -72,7 +74,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
  <span class="counter" id="counter">01 / 03</span>
 </header>
 <aside class="drawer" id="drawer" aria-label="Выбор проекта">
- <div class="drawer-title">Работы</div>
+ <div class="drawer-title">Портфолио</div>
  <nav class="project-list" id="projectList"></nav>
  <div class="drawer-note">Выберите проект, чтобы просмотреть изображения.</div>
 </aside>
@@ -90,68 +92,16 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 </main>
 <footer class="bottom"><span id="projectCaption">Работа 1</span><div class="dots" id="dots" aria-label="Изображения проекта"></div></footer>
 <script>
-const projects = [{"title": "Работа 1", "images": [{"src": "assets/project-1/image-1.jpg", "alt": "Работа 1, изображение 1"}, {"src": "assets/project-1/image-2.jpg", "alt": "Работа 1, изображение 2"}, {"src": "assets/project-1/image-3.jpg", "alt": "Работа 1, изображение 3"}]}, {"title": "Работа 2", "images": [{"src": "assets/project-2/image-1.jpg", "alt": "Работа 2, изображение 1"}, {"src": "assets/project-2/image-2.jpg", "alt": "Работа 2, изображение 2"}, {"src": "assets/project-2/image-3.jpg", "alt": "Работа 2, изображение 3"}, {"src": "assets/project-2/image-4.jpg", "alt": "Работа 2, изображение 4"}]}, {"title": "Работа 3", "images": [{"src": "assets/project-3/image-1.jpg", "alt": "Работа 3, изображение 1"}, {"src": "assets/project-3/image-2.jpg", "alt": "Работа 3, изображение 2"}, {"src": "assets/project-3/image-3.jpg", "alt": "Работа 3, изображение 3"}, {"src": "assets/project-3/image-4.jpg", "alt": "Работа 3, изображение 4"}]}];
-let projectIndex = 0, imageIndex = 0;
-const mainImage = document.getElementById('mainImage');
-const artwork = document.getElementById('artwork');
-const counter = document.getElementById('counter');
-const projectCaption = document.getElementById('projectCaption');
-const projectList = document.getElementById('projectList');
-const dots = document.getElementById('dots');
-const variantRail = document.getElementById('variantRail');
-const drawer = document.getElementById('drawer');
-const scrim = document.getElementById('scrim');
-const menuToggle = document.getElementById('menuToggle');
-function renderMenu(){
- projectList.innerHTML='';
- projects.forEach((p,i)=>{
-  const b=document.createElement('button'); b.className='project-button'+(i===projectIndex?' active':'');
-  b.innerHTML=`<img class="project-thumb" src="${p.images[0].src}" alt=""><span><span class="project-label">${p.title}</span><div class="project-count">${String(p.images.length).padStart(2,'0')} изображения</div></span>`;
-  b.addEventListener('click',()=>{projectIndex=i;imageIndex=0;render();closeMenu()});
-  projectList.appendChild(b);
- });
-}
-function render(){
- const p=projects[projectIndex], img=p.images[imageIndex];
- artwork.style.opacity='0';
- window.setTimeout(()=>{
-  mainImage.src=img.src; mainImage.alt=img.alt; artwork.style.opacity='1';
- },120);
- counter.textContent=`${String(projectIndex+1).padStart(2,'0')} / ${String(projects.length).padStart(2,'0')}`;
- projectCaption.textContent=p.title;
- variantRail.innerHTML='';
- p.images.forEach((variant,i)=>{
-  const b=document.createElement('button'); b.className='variant-thumb'+(i===imageIndex?' active':'');
-  b.setAttribute('aria-label',`Показать вариант ${i+1}`); b.title=`Вариант ${i+1}`;
-  const thumb=document.createElement('img'); thumb.src=variant.src; thumb.alt=''; b.appendChild(thumb);
-  b.addEventListener('click',()=>{imageIndex=i;render()}); variantRail.appendChild(b);
- });
- dots.innerHTML='';
- p.images.forEach((_,i)=>{
-  const d=document.createElement('button'); d.className='dot'+(i===imageIndex?' active':'');
-  d.setAttribute('aria-label',`Изображение ${i+1}`);
-  d.addEventListener('click',()=>{imageIndex=i;render()});
-  dots.appendChild(d);
- });
- renderMenu();
-}
-function next(){imageIndex=(imageIndex+1)%projects[projectIndex].images.length;render()}
-function prev(){imageIndex=(imageIndex-1+projects[projectIndex].images.length)%projects[projectIndex].images.length;render()}
-function openMenu(){drawer.classList.add('open');scrim.classList.add('visible');menuToggle.setAttribute('aria-expanded','true')}
-function closeMenu(){drawer.classList.remove('open');scrim.classList.remove('visible');menuToggle.setAttribute('aria-expanded','false')}
-document.getElementById('next').addEventListener('click',next);
-document.getElementById('prev').addEventListener('click',prev);
-menuToggle.addEventListener('click',()=>drawer.classList.contains('open')?closeMenu():openMenu());
-scrim.addEventListener('click',closeMenu);
-document.addEventListener('keydown',e=>{
- if(e.key==='ArrowRight')next();
- if(e.key==='ArrowLeft')prev();
- if(e.key==='Escape')closeMenu();
-});
-let touchStart=0;
-document.addEventListener('touchstart',e=>{touchStart=e.changedTouches[0].clientX},{passive:true});
-document.addEventListener('touchend',e=>{const delta=e.changedTouches[0].clientX-touchStart;if(Math.abs(delta)>60){delta<0?next():prev()}},{passive:true});
-render();
+const SUPABASE_URL = window.PORTFOLIO_SUPABASE_URL;
+const SUPABASE_KEY = window.PORTFOLIO_SUPABASE_ANON_KEY;
+let projects = [], projectIndex = 0, imageIndex = 0;
+const mainImage=document.getElementById('mainImage'), artwork=document.getElementById('artwork'), counter=document.getElementById('counter'), projectCaption=document.getElementById('projectCaption'), projectList=document.getElementById('projectList'), dots=document.getElementById('dots'), variantRail=document.getElementById('variantRail'), drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim'), menuToggle=document.getElementById('menuToggle');
+function renderMenu(){projectList.innerHTML='';projects.forEach((p,i)=>{const b=document.createElement('button');b.className='project-button'+(i===projectIndex?' active':'');const im=document.createElement('img');im.className='project-thumb';im.src=p.images[0].src;im.alt='';const wrap=document.createElement('span'),label=document.createElement('span'),count=document.createElement('div');label.className='project-label';label.textContent=p.title;count.className='project-count';count.textContent=String(p.images.length).padStart(2,'0')+' изображения';wrap.append(label,count);b.append(im,wrap);b.addEventListener('click',()=>{projectIndex=i;imageIndex=0;render();closeMenu()});projectList.appendChild(b)})}
+function render(){if(!projects.length)return;projectIndex=Math.max(0,Math.min(projectIndex,projects.length-1));const p=projects[projectIndex];imageIndex=Math.max(0,Math.min(imageIndex,p.images.length-1));const img=p.images[imageIndex];artwork.style.opacity='0';window.setTimeout(()=>{mainImage.src=img.src;mainImage.alt=img.alt||p.title;artwork.style.opacity='1'},120);counter.textContent=String(projectIndex+1).padStart(2,'0')+' / '+String(projects.length).padStart(2,'0');projectCaption.textContent=p.title;variantRail.innerHTML='';p.images.forEach((v,i)=>{const b=document.createElement('button');b.className='variant-thumb'+(i===imageIndex?' active':'');b.setAttribute('aria-label','Показать вариант '+(i+1));b.title='Вариант '+(i+1);const im=document.createElement('img');im.src=v.src;im.alt='';b.appendChild(im);b.addEventListener('click',()=>{imageIndex=i;render()});variantRail.appendChild(b)});dots.innerHTML='';p.images.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i===imageIndex?' active':'');d.setAttribute('aria-label','Изображение '+(i+1));d.addEventListener('click',()=>{imageIndex=i;render()});dots.appendChild(d)});renderMenu()}
+function next(){if(projects.length){imageIndex=(imageIndex+1)%projects[projectIndex].images.length;render()}}function prev(){if(projects.length){imageIndex=(imageIndex-1+projects[projectIndex].images.length)%projects[projectIndex].images.length;render()}}
+function openMenu(){drawer.classList.add('open');scrim.classList.add('visible');menuToggle.setAttribute('aria-expanded','true')}function closeMenu(){drawer.classList.remove('open');scrim.classList.remove('visible');menuToggle.setAttribute('aria-expanded','false')}
+document.getElementById('next').addEventListener('click',next);document.getElementById('prev').addEventListener('click',prev);menuToggle.addEventListener('click',()=>drawer.classList.contains('open')?closeMenu():openMenu());scrim.addEventListener('click',closeMenu);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')next();if(e.key==='ArrowLeft')prev();if(e.key==='Escape')closeMenu()});let touchStart=0;document.addEventListener('touchstart',e=>{touchStart=e.changedTouches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-touchStart;if(Math.abs(d)>60){d<0?next():prev()}},{passive:true});
+async function loadProjects(){try{if(!window.supabase||!SUPABASE_URL||SUPABASE_URL.includes('ВСТАВЬТЕ'))throw new Error('Портфолио пока не подключено к облачной базе.');const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const {data:ps,error}=await db.from('projects').select('id,title,sort_order,project_images(id,storage_path,sort_order)').order('sort_order');if(error)throw error;projects=(ps||[]).map(p=>({title:p.title,images:(p.project_images||[]).sort((a,b)=>a.sort_order-b.sort_order).map(im=>({src:db.storage.from('portfolio-images').getPublicUrl(im.storage_path).data.publicUrl,alt:p.title}))})).filter(p=>p.images.length);if(!projects.length)throw new Error('Работы появятся здесь после добавления через /admin/.');render()}catch(e){projectCaption.textContent='Портфолио загружается';console.error(e)}}loadProjects();
 </script>
 </body>
 </html>
