@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8f8f6">
+<title>Портфолио</title>
+<style>
+:root{--bg:#f8f8f6;--ink:#252522;--muted:#8b8b84;--ease:cubic-bezier(.2,.7,.2,1)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+body{overflow:hidden}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.topbar{position:fixed;z-index:5;inset:0 0 auto 0;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;pointer-events:none}
+.topbar button,.topbar span{pointer-events:auto}
+.menu-toggle{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.menu-icon{width:20px;height:12px;display:flex;flex-direction:column;justify-content:space-between}
+.menu-icon i{height:1px;width:20px;background:currentColor;display:block;transition:transform .3s}
+.menu-toggle[aria-expanded="true"] .menu-icon i:first-child{transform:translateY(5.5px) rotate(45deg)}
+.menu-toggle[aria-expanded="true"] .menu-icon i:last-child{transform:translateY(-5.5px) rotate(-45deg)}
+.counter{font-size:11px;letter-spacing:.08em;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage{height:100dvh;width:100%;display:flex;align-items:center;justify-content:center;padding:78px 125px 58px 6vw;position:relative;gap:24px}
+.artwork{height:100%;width:100%;min-width:0;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .2s ease}
+.artwork img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;box-shadow:0 10px 40px rgba(0,0,0,.035);user-select:none;-webkit-user-drag:none}
+.nav-arrow{position:fixed;z-index:4;top:50%;transform:translateY(-50%);width:46px;height:64px;display:grid;place-items:center;color:#77776f;opacity:.7;transition:opacity .2s, color .2s}
+.nav-arrow:hover{opacity:1;color:#222}
+.nav-arrow svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.2;fill:none}
+.prev{left:15px}.next{right:105px}
+.variant-rail{position:fixed;z-index:3;right:28px;top:50%;transform:translateY(-50%);width:78px;max-height:68vh;display:flex;flex-direction:column;align-items:center;gap:13px;overflow-y:auto;scrollbar-width:none;padding:5px 0}
+.variant-rail::-webkit-scrollbar{display:none}
+.variant-thumb{width:64px;height:64px;padding:0;flex:0 0 auto;opacity:.48;transition:opacity .2s,transform .2s;display:grid;place-items:center}
+.variant-thumb:hover{opacity:.82}
+.variant-thumb.active{opacity:1;transform:scale(1.04)}
+.variant-thumb img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.variant-thumb.active img{outline:1px solid #a6a69e;outline-offset:4px}
+.variant-label{position:fixed;right:28px;bottom:62px;width:78px;text-align:center;color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.bottom{position:fixed;left:30px;right:30px;bottom:22px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;pointer-events:none}
+.dots{display:flex;gap:8px;pointer-events:auto}
+.dot{width:5px;height:5px;border-radius:50%;background:#d2d2cc;padding:0;transition:background .2s,transform .2s}
+.dot.active{background:#33332f;transform:scale(1.2)}
+.drawer{position:fixed;z-index:8;inset:0 auto 0 0;width:min(360px,88vw);background:var(--bg);padding:92px 34px 32px;transform:translateX(-102%);transition:transform .42s var(--ease);display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.drawer-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
+.project-list{display:flex;flex-direction:column;gap:20px}
+.project-button{display:flex;align-items:center;gap:16px;text-align:left;padding:0;opacity:.58;transition:opacity .2s}
+.project-button:hover,.project-button.active{opacity:1}
+.project-thumb{width:60px;height:76px;object-fit:cover;background:#eeeee9;flex-shrink:0}
+.project-label{font-size:14px;letter-spacing:.01em}
+.project-count{font-size:10px;color:var(--muted);margin-top:6px}
+.drawer-note{margin-top:auto;font-size:10px;line-height:1.6;color:var(--muted);letter-spacing:.04em}
+.scrim{position:fixed;z-index:7;inset:0;background:rgba(30,30,27,.12);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.scrim.visible{opacity:1;visibility:visible}
+@media(max-width:700px){
+ .topbar{height:58px;padding:0 18px}.stage{padding:66px 9vw 110px;gap:0}
+ .nav-arrow{width:30px}.prev{left:0}.next{right:0}
+ .variant-rail{top:auto;bottom:42px;left:50%;right:auto;transform:translateX(-50%);width:calc(100% - 80px);max-height:none;height:54px;flex-direction:row;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;gap:12px;padding:4px 6px}
+ .variant-thumb{width:44px;height:44px}
+ .variant-label{display:none}
+ .bottom{left:18px;right:18px;bottom:16px}
+ .artwork img{max-width:100%;max-height:100%;box-shadow:none}
+ .next{right:0}
+ .drawer{padding:78px 24px 24px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+ <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="drawer">
+  <span class="menu-icon" aria-hidden="true"><i></i><i></i></span><span>Проекты</span>
+ </button>
+ <span class="counter" id="counter">01 / 03</span>
+</header>
+<aside class="drawer" id="drawer" aria-label="Выбор проекта">
+ <div class="drawer-title">Работы</div>
+ <nav class="project-list" id="projectList"></nav>
+ <div class="drawer-note">Выберите проект, чтобы просмотреть изображения.</div>
+</aside>
+<div class="scrim" id="scrim"></div>
+<main class="stage">
+ <button class="nav-arrow prev" id="prev" aria-label="Предыдущее изображение">
+  <svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8"/></svg>
+ </button>
+ <div class="artwork" id="artwork"><img id="mainImage" alt=""></div>
+ <div class="variant-rail" id="variantRail" aria-label="Другие варианты этой работы"></div>
+ <div class="variant-label" id="variantLabel">Варианты</div>
+ <button class="nav-arrow next" id="next" aria-label="Следующее изображение">
+  <svg viewBox="0 0 24 24"><path d="m9 4 8 8-8 8"/></svg>
+ </button>
+</main>
+<footer class="bottom"><span id="projectCaption">Работа 1</span><div class="dots" id="dots" aria-label="Изображения проекта"></div></footer>
+<script>
+const projects = [{"title": "Работа 1", "images": [{"src": "assets/project-1/image-1.jpg", "alt": "Работа 1, изображение 1"}, {"src": "assets/project-1/image-2.jpg", "alt": "Работа 1, изображение 2"}, {"src": "assets/project-1/image-3.jpg", "alt": "Работа 1, изображение 3"}]}, {"title": "Работа 2", "images": [{"src": "assets/project-2/image-1.jpg", "alt": "Работа 2, изображение 1"}, {"src": "assets/project-2/image-2.jpg", "alt": "Работа 2, изображение 2"}, {"src": "assets/project-2/image-3.jpg", "alt": "Работа 2, изображение 3"}, {"src": "assets/project-2/image-4.jpg", "alt": "Работа 2, изображение 4"}]}, {"title": "Работа 3", "images": [{"src": "assets/project-3/image-1.jpg", "alt": "Работа 3, изображение 1"}, {"src": "assets/project-3/image-2.jpg", "alt": "Работа 3, изображение 2"}, {"src": "assets/project-3/image-3.jpg", "alt": "Работа 3, изображение 3"}, {"src": "assets/project-3/image-4.jpg", "alt": "Работа 3, изображение 4"}]}];
+let projectIndex = 0, imageIndex = 0;
+const mainImage = document.getElementById('mainImage');
+const artwork = document.getElementById('artwork');
+const counter = document.getElementById('counter');
+const projectCaption = document.getElementById('projectCaption');
+const projectList = document.getElementById('projectList');
+const dots = document.getElementById('dots');
+const variantRail = document.getElementById('variantRail');
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+const menuToggle = document.getElementById('menuToggle');
+function renderMenu(){
+ projectList.innerHTML='';
+ projects.forEach((p,i)=>{
+  const b=document.createElement('button'); b.className='project-button'+(i===projectIndex?' active':'');
+  b.innerHTML=`<img class="project-thumb" src="${p.images[0].src}" alt=""><span><span class="project-label">${p.title}</span><div class="project-count">${String(p.images.length).padStart(2,'0')} изображения</div></span>`;
+  b.addEventListener('click',()=>{projectIndex=i;imageIndex=0;render();closeMenu()});
+  projectList.appendChild(b);
+ });
+}
+function render(){
+ const p=projects[projectIndex], img=p.images[imageIndex];
+ artwork.style.opacity='0';
+ window.setTimeout(()=>{
+  mainImage.src=img.src; mainImage.alt=img.alt; artwork.style.opacity='1';
+ },120);
+ counter.textContent=`${String(projectIndex+1).padStart(2,'0')} / ${String(projects.length).padStart(2,'0')}`;
+ projectCaption.textContent=p.title;
+ variantRail.innerHTML='';
+ p.images.forEach((variant,i)=>{
+  const b=document.createElement('button'); b.className='variant-thumb'+(i===imageIndex?' active':'');
+  b.setAttribute('aria-label',`Показать вариант ${i+1}`); b.title=`Вариант ${i+1}`;
+  const thumb=document.createElement('img'); thumb.src=variant.src; thumb.alt=''; b.appendChild(thumb);
+  b.addEventListener('click',()=>{imageIndex=i;render()}); variantRail.appendChild(b);
+ });
+ dots.innerHTML='';
+ p.images.forEach((_,i)=>{
+  const d=document.createElement('button'); d.className='dot'+(i===imageIndex?' active':'');
+  d.setAttribute('aria-label',`Изображение ${i+1}`);
+  d.addEventListener('click',()=>{imageIndex=i;render()});
+  dots.appendChild(d);
+ });
+ renderMenu();
+}
+function next(){imageIndex=(imageIndex+1)%projects[projectIndex].images.length;render()}
+function prev(){imageIndex=(imageIndex-1+projects[projectIndex].images.length)%projects[projectIndex].images.length;render()}
+function openMenu(){drawer.classList.add('open');scrim.classList.add('visible');menuToggle.setAttribute('aria-expanded','true')}
+function closeMenu(){drawer.classList.remove('open');scrim.classList.remove('visible');menuToggle.setAttribute('aria-expanded','false')}
+document.getElementById('next').addEventListener('click',next);
+document.getElementById('prev').addEventListener('click',prev);
+menuToggle.addEventListener('click',()=>drawer.classList.contains('open')?closeMenu():openMenu());
+scrim.addEventListener('click',closeMenu);
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowRight')next();
+ if(e.key==='ArrowLeft')prev();
+ if(e.key==='Escape')closeMenu();
+});
+let touchStart=0;
+document.addEventListener('touchstart',e=>{touchStart=e.changedTouches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const delta=e.changedTouches[0].clientX-touchStart;if(Math.abs(delta)>60){delta<0?next():prev()}},{passive:true});
+render();
+</script>
+</body>
+</html>
