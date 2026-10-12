@@ -1,107 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f8f8f6">
-<title>Портфолио</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Портфолио</title>
+<script src="./supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#f8f8f6;--ink:#252522;--muted:#8b8b84;--ease:cubic-bezier(.2,.7,.2,1)}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
-body{overflow:hidden}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
-.topbar{position:fixed;z-index:5;inset:0 0 auto 0;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;pointer-events:none}
-.topbar button,.topbar span{pointer-events:auto}
-.menu-toggle{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-.menu-icon{width:20px;height:12px;display:flex;flex-direction:column;justify-content:space-between}
-.menu-icon i{height:1px;width:20px;background:currentColor;display:block;transition:transform .3s}
-.menu-toggle[aria-expanded="true"] .menu-icon i:first-child{transform:translateY(5.5px) rotate(45deg)}
-.menu-toggle[aria-expanded="true"] .menu-icon i:last-child{transform:translateY(-5.5px) rotate(-45deg)}
-.counter{font-size:11px;letter-spacing:.08em;color:var(--muted);font-variant-numeric:tabular-nums}
-.stage{height:100dvh;width:100%;display:flex;align-items:center;justify-content:center;padding:78px 125px 58px 6vw;position:relative;gap:24px}
-.artwork{height:100%;width:100%;min-width:0;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .2s ease}
-.artwork img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;box-shadow:0 10px 40px rgba(0,0,0,.035);user-select:none;-webkit-user-drag:none}
-.nav-arrow{position:fixed;z-index:4;top:50%;transform:translateY(-50%);width:46px;height:64px;display:grid;place-items:center;color:#77776f;opacity:.7;transition:opacity .2s, color .2s}
-.nav-arrow:hover{opacity:1;color:#222}
-.nav-arrow svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.2;fill:none}
-.prev{left:15px}.next{right:105px}
-.variant-rail{position:fixed;z-index:3;right:28px;top:50%;transform:translateY(-50%);width:78px;max-height:68vh;display:flex;flex-direction:column;align-items:center;gap:13px;overflow-y:auto;scrollbar-width:none;padding:5px 0}
-.variant-rail::-webkit-scrollbar{display:none}
-.variant-thumb{width:64px;height:64px;padding:0;flex:0 0 auto;opacity:.48;transition:opacity .2s,transform .2s;display:grid;place-items:center}
-.variant-thumb:hover{opacity:.82}
-.variant-thumb.active{opacity:1;transform:scale(1.04)}
-.variant-thumb img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
-.variant-thumb.active img{outline:1px solid #a6a69e;outline-offset:4px}
-.variant-label{position:fixed;right:28px;bottom:62px;width:78px;text-align:center;color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
-.bottom{position:fixed;left:30px;right:30px;bottom:22px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;pointer-events:none}
-.dots{display:flex;gap:8px;pointer-events:auto}
-.dot{width:5px;height:5px;border-radius:50%;background:#d2d2cc;padding:0;transition:background .2s,transform .2s}
-.dot.active{background:#33332f;transform:scale(1.2)}
-.drawer{position:fixed;z-index:8;inset:0 auto 0 0;width:min(360px,88vw);background:var(--bg);padding:92px 34px 32px;transform:translateX(-102%);transition:transform .42s var(--ease);display:flex;flex-direction:column}
-.drawer.open{transform:translateX(0)}
-.drawer-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:26px}
-.project-list{display:flex;flex-direction:column;gap:20px}
-.project-button{display:flex;align-items:center;gap:16px;text-align:left;padding:0;opacity:.58;transition:opacity .2s}
-.project-button:hover,.project-button.active{opacity:1}
-.project-thumb{width:60px;height:76px;object-fit:cover;background:#eeeee9;flex-shrink:0}
-.project-label{font-size:14px;letter-spacing:.01em}
-.project-count{font-size:10px;color:var(--muted);margin-top:6px}
-.drawer-note{margin-top:auto;font-size:10px;line-height:1.6;color:var(--muted);letter-spacing:.04em}
-.scrim{position:fixed;z-index:7;inset:0;background:rgba(30,30,27,.12);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
-.scrim.visible{opacity:1;visibility:visible}
-@media(max-width:700px){
- .topbar{height:58px;padding:0 18px}.stage{padding:66px 9vw 110px;gap:0}
- .nav-arrow{width:30px}.prev{left:0}.next{right:0}
- .variant-rail{top:auto;bottom:42px;left:50%;right:auto;transform:translateX(-50%);width:calc(100% - 80px);max-height:none;height:54px;flex-direction:row;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;gap:12px;padding:4px 6px}
- .variant-thumb{width:44px;height:44px}
- .variant-label{display:none}
- .bottom{left:18px;right:18px;bottom:16px}
- .artwork img{max-width:100%;max-height:100%;box-shadow:none}
- .next{right:0}
- .drawer{padding:78px 24px 24px}
-}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
-<script src="supabase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-<header class="topbar">
- <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="drawer">
-  <span class="menu-icon" aria-hidden="true"><i></i><i></i></span><span>Проекты</span>
- </button>
- <span class="counter" id="counter">01 / 03</span>
-</header>
-<aside class="drawer" id="drawer" aria-label="Выбор проекта">
- <div class="drawer-title">Портфолио</div>
- <nav class="project-list" id="projectList"></nav>
- <div class="drawer-note">Выберите проект, чтобы просмотреть изображения.</div>
-</aside>
-<div class="scrim" id="scrim"></div>
-<main class="stage">
- <button class="nav-arrow prev" id="prev" aria-label="Предыдущее изображение">
-  <svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8"/></svg>
- </button>
- <div class="artwork" id="artwork"><img id="mainImage" alt=""></div>
- <div class="variant-rail" id="variantRail" aria-label="Другие варианты этой работы"></div>
- <div class="variant-label" id="variantLabel">Варианты</div>
- <button class="nav-arrow next" id="next" aria-label="Следующее изображение">
-  <svg viewBox="0 0 24 24"><path d="m9 4 8 8-8 8"/></svg>
- </button>
-</main>
-<footer class="bottom"><span id="projectCaption">Работа 1</span><div class="dots" id="dots" aria-label="Изображения проекта"></div></footer>
+:root{color-scheme:dark;--bg:#111;--fg:#f4f1eb;--muted:#aaa;--line:#333}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif}a{color:inherit;text-decoration:none}header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 5vw;border-bottom:1px solid var(--line)}.logo{font-size:14px;letter-spacing:.18em;text-transform:uppercase}nav{display:flex;flex-wrap:wrap;gap:22px}nav a{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}nav a:hover{color:var(--fg)}main{min-height:70vh;padding:5vw}.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:30px}h1{margin:0;font-size:clamp(28px,5vw,64px);font-weight:400;letter-spacing:-.04em}.eyebrow{margin:0 0 12px;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase}.status{color:var(--muted);font-size:12px;line-height:1.5;max-width:420px;overflow-wrap:anywhere}.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.work{margin:0;min-width:0;background:#191919}.work img{display:block;width:100%;height:auto;max-height:78vh;object-fit:contain;background:#171717}.work figcaption{padding:12px 14px;font-size:12px;color:var(--muted)}.empty{grid-column:1/-1;padding:48px 20px;border:1px solid var(--line);color:var(--muted);line-height:1.6}footer{padding:22px 5vw 34px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;letter-spacing:.1em}@media(max-width:700px){header{align-items:flex-start;flex-direction:column;padding:20px 5vw}nav{gap:14px}.intro{align-items:flex-start;flex-direction:column}.gallery{grid-template-columns:1fr}}
+</style></head><body>
+<header><a class="logo" href="./">Портфолио</a><nav aria-label="Основная навигация"><a href="#works">Работы</a><a href="#about">Обо мне</a><a href="#contacts">Контакты</a><a href="./admin/">Вход</a></nav></header>
+<main id="works"><section class="intro"><div><p class="eyebrow">Избранные проекты</p><h1>Портфолио</h1></div><p class="status" id="projectCaption" role="status" aria-live="polite">Загружаем проекты…</p></section><section class="gallery" id="gallery" aria-label="Работы"><div class="empty">Загружаем работы…</div></section>
+<section id="about" style="padding:72px 0 30px;max-width:700px"><p class="eyebrow">Обо мне</p><h2 style="font-weight:400;font-size:clamp(24px,3vw,40px)">Дизайн, который работает.</h2><p style="color:var(--muted);line-height:1.8">Здесь можно разместить короткий рассказ о себе, своих навыках и подходе к работе.</p></section><section id="contacts" style="padding:30px 0 20px"><p class="eyebrow">Контакты</p><p style="color:var(--muted);line-height:1.8">Добавь сюда удобный способ связи: почту, Telegram или ссылки на соцсети.</p></section></main><footer>ПОРТФОЛИО <span id="projectCount"></span></footer>
 <script>
-const SUPABASE_URL = window.PORTFOLIO_SUPABASE_URL;
-const SUPABASE_KEY = window.PORTFOLIO_SUPABASE_ANON_KEY;
-let projects = [], projectIndex = 0, imageIndex = 0;
-const mainImage=document.getElementById('mainImage'), artwork=document.getElementById('artwork'), counter=document.getElementById('counter'), projectCaption=document.getElementById('projectCaption'), projectList=document.getElementById('projectList'), dots=document.getElementById('dots'), variantRail=document.getElementById('variantRail'), drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim'), menuToggle=document.getElementById('menuToggle');
-function renderMenu(){projectList.innerHTML='';projects.forEach((p,i)=>{const b=document.createElement('button');b.className='project-button'+(i===projectIndex?' active':'');const im=document.createElement('img');im.className='project-thumb';im.src=p.images[0].src;im.alt='';const wrap=document.createElement('span'),label=document.createElement('span'),count=document.createElement('div');label.className='project-label';label.textContent=p.title;count.className='project-count';count.textContent=String(p.images.length).padStart(2,'0')+' изображения';wrap.append(label,count);b.append(im,wrap);b.addEventListener('click',()=>{projectIndex=i;imageIndex=0;render();closeMenu()});projectList.appendChild(b)})}
-function render(){if(!projects.length)return;projectIndex=Math.max(0,Math.min(projectIndex,projects.length-1));const p=projects[projectIndex];imageIndex=Math.max(0,Math.min(imageIndex,p.images.length-1));const img=p.images[imageIndex];artwork.style.opacity='0';window.setTimeout(()=>{mainImage.src=img.src;mainImage.alt=img.alt||p.title;artwork.style.opacity='1'},120);counter.textContent=String(projectIndex+1).padStart(2,'0')+' / '+String(projects.length).padStart(2,'0');projectCaption.textContent=p.title;variantRail.innerHTML='';p.images.forEach((v,i)=>{const b=document.createElement('button');b.className='variant-thumb'+(i===imageIndex?' active':'');b.setAttribute('aria-label','Показать вариант '+(i+1));b.title='Вариант '+(i+1);const im=document.createElement('img');im.src=v.src;im.alt='';b.appendChild(im);b.addEventListener('click',()=>{imageIndex=i;render()});variantRail.appendChild(b)});dots.innerHTML='';p.images.forEach((_,i)=>{const d=document.createElement('button');d.className='dot'+(i===imageIndex?' active':'');d.setAttribute('aria-label','Изображение '+(i+1));d.addEventListener('click',()=>{imageIndex=i;render()});dots.appendChild(d)});renderMenu()}
-function next(){if(projects.length){imageIndex=(imageIndex+1)%projects[projectIndex].images.length;render()}}function prev(){if(projects.length){imageIndex=(imageIndex-1+projects[projectIndex].images.length)%projects[projectIndex].images.length;render()}}
-function openMenu(){drawer.classList.add('open');scrim.classList.add('visible');menuToggle.setAttribute('aria-expanded','true')}function closeMenu(){drawer.classList.remove('open');scrim.classList.remove('visible');menuToggle.setAttribute('aria-expanded','false')}
-document.getElementById('next').addEventListener('click',next);document.getElementById('prev').addEventListener('click',prev);menuToggle.addEventListener('click',()=>drawer.classList.contains('open')?closeMenu():openMenu());scrim.addEventListener('click',closeMenu);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')next();if(e.key==='ArrowLeft')prev();if(e.key==='Escape')closeMenu()});let touchStart=0;document.addEventListener('touchstart',e=>{touchStart=e.changedTouches[0].clientX},{passive:true});document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-touchStart;if(Math.abs(d)>60){d<0?next():prev()}},{passive:true});
-async function loadProjects(){try{if(!window.supabase||!SUPABASE_URL||SUPABASE_URL.includes('ВСТАВЬТЕ'))throw new Error('Портфолио пока не подключено к облачной базе.');const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const {data:ps,error}=await db.from('projects').select('id,title,sort_order,project_images(id,storage_path,sort_order)').order('sort_order');if(error)throw error;projects=(ps||[]).map(p=>({title:p.title,images:(p.project_images||[]).sort((a,b)=>a.sort_order-b.sort_order).map(im=>({src:db.storage.from('portfolio-images').getPublicUrl(im.storage_path).data.publicUrl,alt:p.title}))})).filter(p=>p.images.length);if(!projects.length)throw new Error('Работы появятся здесь после добавления через /admin/.');render()}catch(e){projectCaption.textContent='Портфолио загружается';console.error(e)}}loadProjects();
-</script>
-</body>
-</html>
+(()=>{const caption=document.getElementById('projectCaption'),gallery=document.getElementById('gallery'),count=document.getElementById('projectCount');
+function showError(message){caption.textContent='Не удалось загрузить работы: '+message;gallery.innerHTML='';const n=document.createElement('div');n.className='empty';n.textContent='Проверь настройки Supabase, таблицы базы данных и права доступа. Подробная ошибка показана выше.';gallery.appendChild(n);count.textContent=' · ошибка загрузки';console.error('[Портфолио]',message)}
+function showEmpty(){caption.textContent='Работы пока не добавлены.';gallery.innerHTML='';const n=document.createElement('div');n.className='empty';n.textContent='Добавь первый проект через страницу /admin/.';gallery.appendChild(n);count.textContent=' · 00 работ'}
+function renderProjects(projects,db){gallery.innerHTML='';let total=0;projects.forEach(p=>(p.project_images||[]).slice().sort((a,b)=>(a.sort_order??0)-(b.sort_order??0)).forEach(im=>{const url=db.storage.from('portfolio-images').getPublicUrl(im.storage_path).data.publicUrl;const f=document.createElement('figure');f.className='work';const img=document.createElement('img');img.src=url;img.alt=p.title||'Работа из портфолио';img.loading='lazy';img.onerror=()=>{img.alt='Не удалось загрузить изображение'};const cap=document.createElement('figcaption');cap.textContent=p.title||'Без названия';f.append(img,cap);gallery.appendChild(f);total++}));if(!total){showEmpty();return}caption.textContent='Проекты из портфолио';count.textContent=' · '+String(total).padStart(2,'0')+' изображений'}
+async function loadProjects(){try{const url=String(window.PORTFOLIO_SUPABASE_URL||'').trim(),key=String(window.PORTFOLIO_SUPABASE_ANON_KEY||'').trim();if(!url)throw Error('Не задан PORTFOLIO_SUPABASE_URL в supabase-config.js.');if(!key)throw Error('Не задан PORTFOLIO_SUPABASE_ANON_KEY в supabase-config.js.');if(!window.supabase||typeof window.supabase.createClient!=='function')throw Error('Не загрузилась библиотека Supabase. Проверь интернет-соединение.');let parsed;try{parsed=new URL(url)}catch{throw Error('Адрес Supabase записан неправильно. Проверь URL в supabase-config.js.')}if(parsed.protocol!=='https:'||!parsed.hostname.endsWith('.supabase.co'))throw Error('Ожидается адрес вида https://ИМЯ-ПРОЕКТА.supabase.co.');caption.textContent='Подключаемся к базе данных…';const db=window.supabase.createClient(url,key);const {data,error}=await db.from('projects').select('id,title,sort_order,project_images(id,storage_path,sort_order)').order('sort_order',{ascending:true});if(error)throw Error(error.message||'Неизвестная ошибка Supabase.');renderProjects(data||[],db)}catch(e){showError(e?.message||String(e))}}loadProjects()})();
+</script></body></html>
